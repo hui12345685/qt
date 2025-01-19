@@ -5,6 +5,54 @@
 #include <QSqlRecord>
 #include <QDateTime>
 
+/*
+CREATE DATABASE book;
+ALTER DATABASE book CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `book` (
+  `bookid` int(11) NOT NULL AUTO_INCREMENT,
+  `bookname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `count` int(11) DEFAULT NULL,
+  `type1` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type2` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type3` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  PRIMARY KEY (`bookid`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `user` (
+  `userid` int(11) NOT NULL AUTO_INCREMENT,
+  `grade` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `department` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nickname` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `passwd` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bookid` int(11) DEFAULT NULL,
+  `userid` int(11) DEFAULT NULL,
+  `start` date DEFAULT NULL,
+  `end` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `bookid` (`bookid`),
+  KEY `userid` (`userid`),
+  CONSTRAINT `record_ibfk_1` FOREIGN KEY (`bookid`) REFERENCES `book` (`bookid`),
+  CONSTRAINT `record_ibfk_2` FOREIGN KEY (`userid`) REFERENCES `user` (`userid`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+insert into book values(NULL, '西游记', 10, '历史', '人文', '', 19.9);
+insert into book values(NULL, 'c++程序设计', 10, '计算机', 'c++', '', 29.9);
+
+insert into user values(NULL, '1年1班', "计算机系", '学生', '李四', '123456', 'lisi');
+insert into user values(NULL, '1年1班', "计算机系", '学生', '王五', '123456', 'wangwu');
+
+select id, bookid, book.bookname, userid, user.username, start, end from record join book using(bookid) join user using(userid)
+ */
+
 void SqlMgr::Init()
 {
     // 加载mysql驱动这里挺麻烦的，需要源码编译生成qsqlmysql.dll，参考：https://blog.csdn.net/qq_43414873/article/details/135653232
@@ -24,7 +72,7 @@ bool SqlMgr::Login(QString &user, QString &passwd, int& userId)
     QString strsql = QString("select * from user where username='%1' and passwd='%2'").arg(user).arg(passwd);
     bool ret = q.exec(strsql);
     if (!ret) {
-        qDebug() << q.lastError().text();
+        qDebug() << "login fail:" << q.lastError().text();
         return ret;
     }
 
